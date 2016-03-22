@@ -8,57 +8,42 @@
 
 using namespace std;
 
-const int rows = 5;
-const int cols = 5;
+const int rows = 5000;
+const int cols = 5000;
 
-int main() {	
+int row_top, col_left;
+int row_bottom, col_right;
+
+int main() {
+	// Creating image
     int val = 1;
-#ifdef DEBUG_PRINT
-    cout << "Input image:" << endl;
-#endif
+	DBGPRINT(DEBUG_LEVEL_MATRICES, "Input image:\n");
 	uint8_t** img = new uint8_t*[rows];
-    for (int i=0; i<rows; i++) {
+    for (int i = 0; i < rows; i++) {
 		img[i] = new uint8_t[cols];
-        for (int j=0; j<cols; j++) {
-            img[i][j] = val;
-            val++;
-            if (val > 255)
+        for (int j = 0; j < cols; j++) {
+			img[i][j] = 255; // val;
+            if (++val > 255)
                 val = 0;
-#ifdef DEBUG_PRINT
-            cout << img[i][j] << "\t";
-#endif
+			DBGPRINT(DEBUG_LEVEL_MATRICES, "%d\t", img[i][j]);
         }
-#ifdef DEBUG_PRINT
-        cout << endl;
-#endif
+		DBGPRINT(DEBUG_LEVEL_MATRICES, "\n");
     }
 
+	// Creating Integral image object, which containe integral representation
     IntImage* int_img = new IntImage(img, rows, cols);
-//	imgTypeName type = int_img->getType();
-//	if (type == IMG16)
-//	{
-//		//uint16_t** iimg = int_img->get_representation16();
-//#ifdef DEBUG_PRINT
-//		//cout << "Integral image:" << endl;
-//		//for (int i = 0; i < rows; i++) {
-//		//	for (int j = 0; j < cols; j++) {
-//		//		cout << iimg[i][j] << "\t";
-//		//	}
-//		//	cout << endl;
-//		//}
-//#endif
-//	}
+	DBGPRINT(DEBUG_LEVEL_MATRICES, "Integral image:\n");
+	if (DEBUG_LEVEL >= DEBUG_LEVEL_MATRICES)
+		int_img->print_image();
+	DBGPRINT(DEBUG_LEVEL_RESULTS, "Integral image data type: %s\n", int_img->getTypeStr());
 
-#ifdef DEBUG_PRINT
-    cout << "Integral region:" << endl;
-#endif
-    int row_top = 0;
-    int row_bottom = 4;
-    int col_left = 0;
-    int col_right = 4;
-#ifdef DEBUG_PRINT
-//    cout << int_img->get_integral(row_top, row_bottom, col_left, col_right) << endl;
-#endif
+	// Getting integral brightness of region
+    row_top = 0;
+	col_left = 0;
+    row_bottom = 4;   
+    col_right = 4;
+	DBGPRINT(DEBUG_LEVEL_RESULTS, "Integral region from (%d,%d) to (%d,%d):\n", row_top, col_left, row_bottom, col_right);
+	DBGPRINT(DEBUG_LEVEL_RESULTS, "%d\n", int_img->get_integral(row_top, row_bottom, col_left, col_right));
 
 	system("pause");
     return 0;

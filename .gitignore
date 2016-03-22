@@ -1,3 +1,3 @@
 # Visual Studio files
-*\Debug\*
-*\Release\*
+*/Debug/*
+*/Release/*
