@@ -32,6 +32,9 @@ private:
 	void calc_representation(T **img, uint8_t **pInt);
 
 	template <typename T>
+	void calc_representation(T** img, uint8_t **pInt, int mod);
+
+	template <typename T>
 	uint64_t gi(T** img, int row_top, int row_bottom, int col_left, int col_right);
 
 	template <typename T>

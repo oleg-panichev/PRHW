@@ -7,8 +7,8 @@
 IntImage::IntImage(uint8_t** _img, int _rows, int _cols) {
 	rows = _rows;
 	cols = _cols;
-	int maxSum = ceil(log2(rows*cols)) + 8;
-	if (maxSum <= 16) 
+	int maxSum = (int)ceil(log2(rows*cols)) + 8;
+	if (maxSum < 16) 
 	{
 		type = IMG16;
 		img16 = new uint16_t*[rows];
@@ -16,7 +16,7 @@ IntImage::IntImage(uint8_t** _img, int _rows, int _cols) {
 			img16[i] = new uint16_t[cols];
 		calc_representation(img16, _img);
 	}
-	else if (maxSum > 16 && maxSum <= 32) 
+	else if (maxSum >= 16 && maxSum < 32) 
 	{
 		type = IMG32;
 		img32 = new uint32_t*[rows];
@@ -40,22 +40,22 @@ IntImage::IntImage(uint8_t** _img, int _rows, int _cols, int _maxRows, int _maxC
 	maxRows = _maxRows;
 	maxCols = _maxCols;
 
-	int maxSum = ceil(log2(maxRows*maxCols)) + 8;
-	if (maxSum <= 16)
+	int maxSum = (int)ceil(log2(maxRows*maxCols)) + 8;
+	if (maxSum < 16)
 	{
 		type = IMG16;
 		img16 = new uint16_t*[rows];
 		for (int i = 0; i < rows; i++)
 			img16[i] = new uint16_t[cols];
-		calc_representation(img16, _img);
+		calc_representation(img16, _img, 16);
 	}
-	else if (maxSum > 16 && maxSum <= 32)
+	else if (maxSum >= 16 && maxSum < 32)
 	{
 		type = IMG32;
 		img32 = new uint32_t*[rows];
 		for (int i = 0; i < rows; i++)
 			img32[i] = new uint32_t[cols];
-		calc_representation(img32, _img);
+		calc_representation(img32, _img, 32);
 	}
 	else
 	{
@@ -70,9 +70,9 @@ IntImage::IntImage(uint8_t** _img, int _rows, int _cols, int _maxRows, int _maxC
 
 template <typename T>
 void IntImage::calc_representation(T** img, uint8_t **pInt) {
-	for (int i = 0; i<rows; i++)
+	for (int i = 0; i < rows; i++)
 	{
-		for (int j = 0; j<cols; j++)
+		for (int j = 0; j < cols; j++)
 		{
 			img[i][j] = pInt[i][j];
 			if (i > 0)
@@ -81,6 +81,27 @@ void IntImage::calc_representation(T** img, uint8_t **pInt) {
 				img[i][j] += img[i][j - 1];
 			if (i > 0 && j > 0)
 				img[i][j] -= img[i - 1][j - 1];
+		}
+	}
+}
+
+template <typename T>
+void IntImage::calc_representation(T** img, uint8_t **pInt, int mod) {
+	uint64_t val;
+	for (int i = 0; i < rows; i++)
+	{
+		for (int j = 0; j < cols; j++)
+		{
+			val = (uint64_t)pInt[i][j];
+			if (i > 0)
+				val += (uint64_t)img[i - 1][j];
+			if (j > 0)
+				val += (uint64_t)img[i][j - 1];
+			if (i > 0 && j > 0)
+				val -= (uint64_t)img[i - 1][j - 1];
+
+			uint64_t temp = ((uint64_t)1 << (mod - 1));
+ 			img[i][j] = (T) (val % temp);
 		}
 	}
 }
@@ -97,11 +118,26 @@ uint64_t IntImage::get_integral(int row_top, int row_bottom, int col_left, int c
 template <typename T>
 inline uint64_t IntImage::gi(T** img, int row_top, int row_bottom, int col_left, int col_right) {
 	uint64_t val = img[row_bottom][col_right];
-    if (col_left > 0)
-        val -= img[row_bottom][col_left-1];
-    if (row_top > 0)
-        val -= img[row_top-1][col_right];
-    if (col_left > 0 && row_top > 0)
-        val += img[row_top-1][col_left-1];
+	if (col_left > 0 && row_top > 0)
+		val += img[row_top - 1][col_left - 1];
+	if (col_left > 0) {
+		if (val < img[row_bottom][col_left - 1]) {
+			if (type == IMG16)
+				val += (uint16_t)1 << 15;
+			else if (type == IMG32)
+				val += (uint16_t)1 << 31;
+		}
+		val -= img[row_bottom][col_left - 1];
+	}
+	if (row_top > 0) {
+		if (val < img[row_top - 1][col_right]) {
+			if (type == IMG16)
+				val += (uint16_t)1 << 15;
+			else if (type == IMG32)
+				val += (uint16_t)1 << 31;
+		}
+		val -= img[row_top - 1][col_right];
+	}
+    
     return val;
 }

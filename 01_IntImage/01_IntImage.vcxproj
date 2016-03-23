@@ -14,10 +14,12 @@
     <ClCompile Include="src\debug.cpp" />
     <ClCompile Include="src\IntImage.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\debug.h" />
     <ClInclude Include="src\IntImage.h" />
+    <ClInclude Include="src\tests.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{183D8A62-64A7-40FD-B5DA-3354E9148E5F}</ProjectGuid>
