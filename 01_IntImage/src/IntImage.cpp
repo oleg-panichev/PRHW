@@ -8,7 +8,7 @@ IntImage::IntImage(uint8_t** _img, int _rows, int _cols) {
 	rows = _rows;
 	cols = _cols;
 	int maxSum = (int)ceil(log2(rows*cols)) + 8;
-	if (maxSum < 16) 
+	if (maxSum <= 16) 
 	{
 		type = IMG16;
 		img16 = new uint16_t*[rows];
@@ -16,7 +16,7 @@ IntImage::IntImage(uint8_t** _img, int _rows, int _cols) {
 			img16[i] = new uint16_t[cols];
 		calc_representation(img16, _img);
 	}
-	else if (maxSum >= 16 && maxSum < 32) 
+	else if (maxSum > 16 && maxSum <= 32) 
 	{
 		type = IMG32;
 		img32 = new uint32_t*[rows];
@@ -41,7 +41,7 @@ IntImage::IntImage(uint8_t** _img, int _rows, int _cols, int _maxRows, int _maxC
 	maxCols = _maxCols;
 
 	int maxSum = (int)ceil(log2(maxRows*maxCols)) + 8;
-	if (maxSum < 16)
+	if (maxSum <= 16)
 	{
 		type = IMG16;
 		img16 = new uint16_t*[rows];
@@ -49,7 +49,7 @@ IntImage::IntImage(uint8_t** _img, int _rows, int _cols, int _maxRows, int _maxC
 			img16[i] = new uint16_t[cols];
 		calc_representation(img16, _img, 16);
 	}
-	else if (maxSum >= 16 && maxSum < 32)
+	else if (maxSum > 16 && maxSum <= 32)
 	{
 		type = IMG32;
 		img32 = new uint32_t*[rows];
